@@ -1,0 +1,272 @@
+{
+	"info": {
+		"_postman_id": "62b0f181-164d-40df-b299-43ae7ba4fa9a",
+		"name": "Rentbot API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21129621"
+	},
+	"item": [
+		{
+			"name": "Apartments",
+			"item": [
+				{
+					"name": "Get apartments",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/apartments/?city=Beograd",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"apartments",
+								""
+							],
+							"query": [
+								{
+									"key": "city",
+									"value": "Beograd"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add apartment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"src\": \"halooglasi\",\r\n    \"city\": \"Beograd\",\r\n    \"district\": \"Voždovac\",\r\n    \"price\": \"600\",\r\n    \"currency\": \"€\",\r\n    \"type\": \"Дом\",\r\n    \"rooms\": \"2.5\",\r\n    \"size\": \"15 m2\",\r\n    \"reporter\": \"Agencija\",\r\n    \"published\": \"31.05.2024. u 21:53\",\r\n    \"internalId\": \"4453322222243\",\r\n    \"image_url\": \"https://img.halooglasi.com//slike/oglasi/Thumbs/240525/m/da-zivite-i-uzivate-odmah-useljiv-odlican-sta-5425644485746-71808335257.jpg\",\r\n    \"url\": \"https://www.halooglasi.com/nekretnine/izdavanje-stanova/da-zivite-i-uzivate-odmah-useljiv-odlican-sta/5425644485746?kid=4&sid=1716724747916\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/apartments/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"apartments",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Filter apartments",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/apartments/?city=Beograd&last_sent_date=2024-05-31+18:16:43&reporters=Владелец&reporters=Агенство&min_price=600&max_price=700&property_types=Квартира&property_types=Дом",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"apartments",
+								""
+							],
+							"query": [
+								{
+									"key": "city",
+									"value": "Beograd"
+								},
+								{
+									"key": "last_sent_date",
+									"value": "2024-05-31+18:16:43"
+								},
+								{
+									"key": "reporters",
+									"value": "Владелец"
+								},
+								{
+									"key": "reporters",
+									"value": "Агенство"
+								},
+								{
+									"key": "min_price",
+									"value": "600"
+								},
+								{
+									"key": "max_price",
+									"value": "700"
+								},
+								{
+									"key": "property_types",
+									"value": "Квартира"
+								},
+								{
+									"key": "property_types",
+									"value": "Дом"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tasks",
+			"item": [
+				{
+					"name": "Add task",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"chat_id\": 123456789,\r\n  \"city\": \"belgrade\",\r\n  \"interval\": 600,\r\n  \"last_sent_date\": \"2024-05-25T15:30:00Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/tasks/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"tasks",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete task",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/tasks/delete-by-chat-id/?chat_id=946662997",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"tasks",
+								"delete-by-chat-id",
+								""
+							],
+							"query": [
+								{
+									"key": "chat_id",
+									"value": "946662997"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Task",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"last_sent_date\" : \"2024-05-31 19:55:58.850024\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8000/api/tasks/126/",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"api",
+								"tasks",
+								"126",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
