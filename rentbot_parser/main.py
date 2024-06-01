@@ -90,11 +90,12 @@ for avd_type in adv_types:
             logger.info('Страница {0}'.format(i))
 
             driver = setup_driver()
-
+            tryies = 0
             try:
+                # !!! Разбить на отдельные методы
+                tryies += 1
                 driver.get(SEARCH_URL.format(avd_type, grad, i))
                 driver.implicitly_wait(10)
-
                 wait_for_images(driver=driver, tag='img.resized-image')
 
                 if 'product-list' in driver.page_source:
@@ -170,7 +171,7 @@ for avd_type in adv_types:
                                         except Exception as e:
                                             logger.error(f'Ошибка: {str(e)}\n{sub_url}')
                                 else:
-                                    logger.info('Страница не найдена: ' + sub_url)
+                                    logger.error('Страница не найдена: ' + sub_url)
                                 driver.back()
 
                         except Exception as e:
@@ -183,6 +184,9 @@ for avd_type in adv_types:
                 # Возможны глюки с драйвером при нехватке ресурсов
                 # Повторная попытка через 5 секунд
                 time.sleep(5)
+                # 3 попытки
+                if (tryies > 2):
+                    continue
                 i -= 1
                 continue
             finally:

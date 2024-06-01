@@ -15,6 +15,8 @@ RUN pip install --trusted-host pypi.python.org -r rentbot_django_api/requirement
 
 RUN pip install --trusted-host pypi.python.org -r rentbot_bot/requirements.txt --no-cache-dir
 
+RUN ln -sf /usr/share/zoneinfo/Europe/Belgrade /etc/localtime && echo "Europe/Belgrade" > /etc/timezone
+
 EXPOSE 8000
 
 COPY cronjob /etc/cron.d/cronjob

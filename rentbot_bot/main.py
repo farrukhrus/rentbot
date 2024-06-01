@@ -22,13 +22,14 @@ TOKEN = os.getenv('TOKEN')
 API_URL = os.getenv('API_URL')
 ADV_API_URL = f'{API_URL}apartments/'
 TASK_API_URL = f'{API_URL}tasks/'
+LOG_LEVEL = logging.INFO if os.getenv('LOG_LEVEL') == 'INFO' else logging.ERROR
 
+# !!! Настроить ротацию логов и именование файлов с учетом даты
 log_file_path = '/app/rentbot_bot/output.log'
 if os.path.exists(log_file_path):
     os.remove(log_file_path)
 
-# !!! Задавать уровень логирования через .env файл
-logging.basicConfig(filename=log_file_path, level=logging.INFO,
+logging.basicConfig(filename=log_file_path, level=LOG_LEVEL,
                     format='%(asctime)s %(levelname)s:%(message)s',
                     encoding='utf-8')
 logger = logging.getLogger()
@@ -516,15 +517,15 @@ async def start_search(update: Update, context: CallbackContext):
 
     # Формирование текста с фильтрами
     filter_text = f"✅ Начинаю поиск по условиям:\n"
-    filter_text += f"Город: {cities[selected_city]}\n"
-    filter_text += f"Район: {', '.join(context.user_data['selected_districts'])}\n" if context.user_data['selected_districts'] else ""
-    filter_text += f"Площадь: {', '.join(context.user_data['selected_sizes'])}\n" if context.user_data['selected_sizes'] else ""
-    filter_text += f"Цена(€): {context.user_data['min_price']} - {context.user_data['max_price']}\n" if context.user_data['min_price'] and context.user_data['max_price'] else ""
-    filter_text += f"Тип недвижимости: {', '.join(context.user_data['selected_property_types'])}\n" if context.user_data['selected_property_types'] else ""
-    filter_text += f"Количество комнат: {', '.join(context.user_data['selected_rooms'])}\n" if context.user_data['selected_rooms'] else ""
-    filter_text += f"Разместил: {', '.join(context.user_data['selected_reporters'])}\n" if context.user_data['selected_reporters'] else ""
+    filter_text += f"Город: <b>{cities[selected_city]}</b>\n"
+    filter_text += f"Район: <b>{', '.join(context.user_data['selected_districts'])}</b>\n" if context.user_data['selected_districts'] else ""
+    filter_text += f"Площадь: <b>{', '.join(context.user_data['selected_sizes'])}</b>\n" if context.user_data['selected_sizes'] else ""
+    filter_text += f"Цена(€): <b>{context.user_data['min_price']} - {context.user_data['max_price']}</b>\n" if context.user_data['min_price'] and context.user_data['max_price'] else ""
+    filter_text += f"Тип недвижимости: <b>{', '.join(context.user_data['selected_property_types'])}</b>\n" if context.user_data['selected_property_types'] else ""
+    filter_text += f"Количество комнат: <b>{', '.join(context.user_data['selected_rooms'])}</b>\n" if context.user_data['selected_rooms'] else ""
+    filter_text += f"Разместил: <b>{', '.join(context.user_data['selected_reporters'])}</b>\n" if context.user_data['selected_reporters'] else ""
 
-    await query.edit_message_text(text=filter_text)
+    await query.edit_message_text(text=filter_text, parse_mode='HTML')
 
 
 async def send_listings(context: CallbackContext):
@@ -588,12 +589,12 @@ async def send_listings(context: CallbackContext):
                 for listing in new_listings:
                     reply_text = (
                         f"<b>{listing['city']}, {listing['district']}</b>\n"
-                        f"{listing['type']}, {listing['size']} m2\n"
-                        f"Количество комнат: {listing['rooms']}\n"
-                        f"Разместил: {listing['reporter']}\n\n"
-                        f"💵<b>{listing['price']} {listing['currency']}</b>\n\n"
+                        f"{listing['type']}, <b>{listing['size']} m2</b>\n"
+                        f"Количество комнат: <b>{listing['rooms']}</b>\n"
+                        f"Разместил: <b>{listing['reporter']}</b>\n\n"
+                        f"<b>{listing['price']} {listing['currency']}</b>\n\n"
                         f"<i>от {listing['published']}</i>\n"
-                        f"Источник: <a href='{listing['url']}'>{listing['src']}</a>\n"
+                        f"Источник: <a href='{listing['url']}'>{listing['src']}</a>"
                     )
                     image_url = listing['image_url']
 
@@ -704,7 +705,8 @@ def restore_tasks(job_queue):
                     'selected_property_types': task['property_types'],
                     'selected_rooms': task['rooms']
                 }, name=str(task['user_id']))
-                new_last_sent_date = datetime.now(timezone.utc) + timedelta(seconds=1)
+                belgrade_tz = pytz.timezone('Europe/Belgrade')
+                new_last_sent_date = datetime.now(belgrade_tz) + timedelta(seconds=1)
                 requests.patch(f"{TASK_API_URL}{task['id']}/", json={'last_sent_date': new_last_sent_date.isoformat()})
     else:
         logger.error(f'Ошибка получения задач из API: {response.status_code} {response.content}')

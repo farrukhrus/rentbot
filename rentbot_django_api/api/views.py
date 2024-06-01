@@ -7,24 +7,11 @@ from .models import Apartment, Task
 from .serializers import ApartmentSerializer, TaskSerializer
 from django.utils.dateparse import parse_datetime
 from django.utils import timezone
-import logging
 from django.shortcuts import get_object_or_404
 from django.db import models
 
 from datetime import timedelta
 
-logger = logging.getLogger(__name__)
-
-
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.StreamHandler()
-    ]
-)
-
-logger = logging.getLogger(__name__)
 
 @api_view(['POST', 'GET'])
 def apartment_create_list(request):

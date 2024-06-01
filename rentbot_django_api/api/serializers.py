@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from rest_framework import serializers
+import pytz
 from .models import Apartment, Task
 
 
@@ -56,11 +57,14 @@ class ApartmentSerializer(serializers.ModelSerializer):
         return value
 
     def validate_published(self, value):
+        belgrade_tz = pytz.timezone('Europe/Belgrade')
         parsed_date = datetime.strptime(value, '%d.%m.%Y. u %H:%M')
-        if parsed_date < datetime.now() - timedelta(minutes=20):
+
+        if belgrade_tz.localize(parsed_date) < datetime.now(belgrade_tz) - timedelta(minutes=20):
             raise serializers.ValidationError(
                 "Дата и время публикации не должны быть меньше (сейчас - 20 минут)")
-        return parsed_date.strftime('%d.%m.%Y %H:%M')
+
+        return belgrade_tz.localize(parsed_date).strftime('%d.%m.%Y %H:%M')
 
 
 class TaskSerializer(serializers.ModelSerializer):
