@@ -60,9 +60,9 @@ class ApartmentSerializer(serializers.ModelSerializer):
         belgrade_tz = pytz.timezone('Europe/Belgrade')
         parsed_date = datetime.strptime(value, '%d.%m.%Y. u %H:%M')
 
-        if belgrade_tz.localize(parsed_date) < datetime.now(belgrade_tz) - timedelta(minutes=20):
+        if belgrade_tz.localize(parsed_date) < datetime.now(belgrade_tz) - timedelta(minutes=40):
             raise serializers.ValidationError(
-                "Дата и время публикации не должны быть меньше (сейчас - 20 минут)")
+                "Дата и время публикации не должны быть меньше (сейчас - 40 минут)")
 
         return belgrade_tz.localize(parsed_date).strftime('%d.%m.%Y %H:%M')
 
