@@ -1,9 +1,18 @@
-docker build --no-cache -t farrukhrus/rentbot:latest .
+![new2](https://github.com/farrukhrus/rentbot/assets/63088485/78e7c3df-6792-4b6f-a2fe-9d6c81c1418e)
 
-docker push farrukhrus/rentbot:latest
+**Get docker image**
+- `docker pull farrukhrus/rentbot:latest`
 
-docker compose exec rentbot python rentbot_django_api/manage.py migrate
+> Sensitive data (TOKENS, PASSWORDS) is stored in a .env file
 
-docker compose exec rentbot python rentbot_django_api/manage.py makemigrations
+**Running Django API**
+- `docker compose exec rentbot python rentbot_django_api/manage.py migrate`
+- `docker compose exec rentbot python rentbot_django_api/manage.py makemigrations`
 
-docker compose exec rentbot python rentbot_bot/main.py
+**Running Telegram bot**
+- `docker compose exec rentbot python rentbot_bot/main.py`
+
+**Data Fetching and Messaging**
+
+Data fetching from the real estate rental site occurs every 20 minutes.
+Sending new messages occurs every 10 minutes.
