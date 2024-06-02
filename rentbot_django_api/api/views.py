@@ -9,10 +9,35 @@ from django.utils.dateparse import parse_datetime
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
 from django.db import models
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 from datetime import timedelta
 
 
+
+@swagger_auto_schema(
+    method='post',
+    request_body=ApartmentSerializer,
+    responses={201: ApartmentSerializer()},
+    operation_description="Добавить новое объявление"
+)
+@swagger_auto_schema(
+    method='get',
+    manual_parameters=[
+        openapi.Parameter('city', openapi.IN_QUERY, description="City", type=openapi.TYPE_STRING),
+        openapi.Parameter('last_sent_date', openapi.IN_QUERY, description="Last sent date", type=openapi.FORMAT_DATETIME),
+        openapi.Parameter('reporters', openapi.IN_QUERY, description="List of reporters", type=openapi.TYPE_ARRAY, items=openapi.Items(type=openapi.TYPE_STRING)),
+        openapi.Parameter('sizes', openapi.IN_QUERY, description="List of sizes", type=openapi.TYPE_ARRAY, items=openapi.Items(type=openapi.TYPE_STRING)),
+        openapi.Parameter('min_price', openapi.IN_QUERY, description="Minimum price", type=openapi.TYPE_NUMBER),
+        openapi.Parameter('max_price', openapi.IN_QUERY, description="Maximum price", type=openapi.TYPE_NUMBER),
+        openapi.Parameter('districts', openapi.IN_QUERY, description="List of districts", type=openapi.TYPE_ARRAY, items=openapi.Items(type=openapi.TYPE_STRING)),
+        openapi.Parameter('property_types', openapi.IN_QUERY, description="List of property types", type=openapi.TYPE_ARRAY, items=openapi.Items(type=openapi.TYPE_STRING)),
+        openapi.Parameter('rooms', openapi.IN_QUERY, description="List of rooms", type=openapi.TYPE_ARRAY, items=openapi.Items(type=openapi.TYPE_INTEGER)),
+    ],
+    responses={200: ApartmentSerializer(many=True)},
+    operation_description="Получить список объявлений"
+)
 @api_view(['POST', 'GET'])
 def apartment_create_list(request):
     if request.method == 'POST':
