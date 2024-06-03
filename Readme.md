@@ -8,11 +8,11 @@
 
 > Sensitive data (TOKENS, PASSWORDS) is stored in a .env file
 
-**Running Django API**
+**Start Django API**
 - `docker compose exec rentbot python rentbot_django_api/manage.py migrate`
 - `docker compose exec rentbot python rentbot_django_api/manage.py makemigrations`
 
-**Running Telegram bot**
+**Start Telegram bot**
 - `docker compose exec rentbot python rentbot_bot/main.py`
 
 **Data Fetching and Messaging**
