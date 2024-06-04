@@ -2,6 +2,7 @@ from datetime import datetime, date, timedelta
 from dotenv import load_dotenv
 import os
 import sys
+import pytz
 import requests
 import logging
 import time
@@ -19,7 +20,7 @@ from apartment import Apartment
 
 load_dotenv()
 
-NUMBER_OF_PAGES = int(os.getenv('LIMIT'))
+NUMBER_OF_PAGES = 40 #int(os.getenv('LIMIT'))
 
 BASE_URL = os.getenv('BASE_URL')
 SEARCH_URL = os.getenv('SEARCH_URL')
@@ -116,64 +117,50 @@ for avd_type in adv_types:
                                 product_tag = listing.find(class_='product-title')
                                 if product_tag:
                                     sub = product_tag.find('a')
+                                    product_title = product_tag.find('a').get_text(strip=True)
                                     if sub:
                                         sub_url = BASE_URL + sub['href']
 
                                 if sub_url == '':
                                     continue
-
+                                
                                 image_tag = listing.find(class_='resized-image')
                                 image_url = image_tag['src'] if image_tag else ''
 
-                                driver.get(sub_url)
-                                time.sleep(5)
+                                product_features = listing.find('ul', class_='product-features')
+                                size = product_features.find('div', class_='value-wrapper').contents[0].strip().replace(' m', '')
+                                rooms = product_features.find_all('div', class_='value-wrapper')[1].contents[0].strip()
+                                price = listing.find('div', class_='central-feature-wrapper').find('span', {'data-value': True})['data-value']
+                                reporter = listing.find('span', class_='basic-info').get_text(strip=True)
+                                internalId = sub_url.split('/')[-1].split('?')[0]
 
-                                if 'product-page' in driver.page_source:
-                                    subpage_source = driver.page_source
-                                    sub_soup = BeautifulSoup(subpage_source, 'html.parser')
-                                    if sub_soup:
-                                        try:
-                                            if avd_type == 'izdavanje-kuca':
-                                                published = sub_soup.find('strong', id='plh75').get_text(strip=True)
-                                            else:
-                                                published = sub_soup.find('strong', id='plh81').get_text(strip=True)
+                                belgrade_tz = pytz.timezone('Europe/Belgrade')
+                                insertedAt = datetime.now(belgrade_tz)
+                                published = insertedAt.strftime('%d.%m.%Y. u %H:%M')
 
-                                            if avd_type == 'izdavanje-kuca':
-                                                internalId = sub_soup.find('strong', id='plh71').get_text(strip=True)
-                                            else:
-                                                internalId = sub_soup.find('strong', id='plh77').get_text(strip=True)
+                                subtitle_places = listing.find('ul', class_='subtitle-places').find_all('li')
+                                city = subtitle_places[0].get_text(strip=True)
+                                district = subtitle_places[1].get_text(strip=True)
 
-                                            content = sub_soup.find('div', class_='product-page')
-                                            if content:
-                                                city = content.find('span', id='plh2').get_text(strip=True)
-                                                district = content.find('span', id='plh3').get_text(strip=True)
-                                                offer = content.find('span', id='plh6')
-                                                if offer:
-                                                    price = offer.find('span', class_='offer-price-value').get_text(strip=True)
-                                                    currency = offer.find('span', class_='offer-price-unit').get_text(strip=True)
-                                                type = content.find('span', id='plh10').get_text(strip=True)
-                                                rooms = content.find('span', id='plh12').get_text(strip=True)
-                                                size = content.find('span', id='plh11').get_text(strip=True)
-                                                reporter = content.find('span', id='plh13').get_text(strip=True)
-                                                apartment = Apartment(city=city, district=district,
-                                                                    price=price, currency=currency,
-                                                                    type=type, rooms=rooms, size=size,
-                                                                    reporter=reporter, published=published,
-                                                                    internalId=internalId, src='halooglasi',
-                                                                    image_url=image_url, url=sub_url)
-                                                response = invokePost(apartment.convertToJson())
-                                                if response.status_code == 201:
-                                                    logger.info('Запись опубликована: ' + apartment.convertToJson())
-                                                else:
-                                                    logger.error(
-                                                        f'Возникла ошибка: {response.content}\n{apartment.convertToJson()}'
-                                                    )
-                                        except Exception as e:
-                                            logger.error(f'Ошибка: {str(e)}\n{sub_url}')
+                                type = ''
+                                if avd_type == 'izdavanje-stanova':
+                                    type = 'stan'
+                                elif avd_type == 'izdavanje-kuca':
+                                    type = 'kuća'
+                                
+                                apartment = Apartment(city=city, district=district,
+                                                      price=price, currency='€',
+                                                      type=type, rooms=rooms, size=size,
+                                                      reporter=reporter, published=published,
+                                                      internalId=internalId, src='halooglasi',
+                                                      image_url=image_url, url=sub_url)
+                                response = invokePost(apartment.convertToJson())
+                                if response.status_code == 201:
+                                    logger.info('Запись опубликована: ' + apartment.convertToJson())
                                 else:
-                                    logger.error('Страница не найдена: ' + sub_url)
-                                driver.back()
-
+                                    logger.error(
+                                        f'Возникла ошибка: {response.content}\n{apartment.convertToJson()}'
+                                    )
                         except Exception as e:
                             logger.error(f'Ошибка: {str(e)}')
                             continue
