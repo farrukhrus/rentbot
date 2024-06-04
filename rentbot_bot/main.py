@@ -18,14 +18,14 @@ from dict import (cities, districts_belgrade, districts_novisad,
 
 load_dotenv()
 
-TOKEN = '6504763849:AAEL4nwX10TJmD4Gx7BGL8-pbAQ8-tlbJVo' #os.getenv('TOKEN')
+TOKEN = os.getenv('TOKEN')
 API_URL = os.getenv('API_URL')
 ADV_API_URL = f'{API_URL}apartments/'
 TASK_API_URL = f'{API_URL}tasks/'
-LOG_LEVEL = logging.INFO #logging.INFO if os.getenv('LOG_LEVEL') == 'INFO' else logging.ERROR
+LOG_LEVEL = logging.INFO if os.getenv('LOG_LEVEL') == 'INFO' else logging.ERROR
 
 # !!! Настроить ротацию логов и именование файлов с учетом даты
-log_file_path = 'output.log'#/app/rentbot_bot/output.log'
+log_file_path = '/app/rentbot_bot/output.log'
 if os.path.exists(log_file_path):
     os.remove(log_file_path)
 
